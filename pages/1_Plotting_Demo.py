@@ -94,7 +94,9 @@ def generate_sequence(unused_bobbins):
 
 # Example usage with new bobbin format
 #bobbins_lengths = [("Lot 1", "A1", 500)]
-bobbins_lengths = [(df.at[0,'Lot ID'], df.at[0,'Bobbin ID'], df.at[0,'Length (m)']), (df.at[1,'Lot ID'], df.at[1,'Bobbin ID'], df.at[1,'Length (m)']), (df.at[2,'Lot ID'], df.at[2,'Bobbin ID'], df.at[2,'Length (m)'])]
+bobbins_lengths = [(df.at[0,'Lot ID'], df.at[0,'Bobbin ID'], df.at[0,'Length (m)']), 
+                   (df.at[1,'Lot ID'], df.at[1,'Bobbin ID'], df.at[1,'Length (m)']), 
+                   (df.at[2,'Lot ID'], df.at[2,'Bobbin ID'], df.at[2,'Length (m)'])]
 
 original_sum = sum(bobbin[2] for bobbin in bobbins_lengths)  # Calculate the sum of original lengths
 total_max_length = 0  # Initialize total maximum length
