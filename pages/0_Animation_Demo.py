@@ -10,3 +10,4 @@ else:
     st.warning("you need to upload a csv or excel file")
 
 st.write(df1)
+
