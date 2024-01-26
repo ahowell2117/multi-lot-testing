@@ -93,13 +93,17 @@ def generate_sequence(unused_bobbins):
     return max_length, sequence, knots, unused, trimmed
 
 # Example usage with new bobbin format
-#bobbins_lengths = [("Lot 1", "A1", 500)]
-bobbins_lengths = [(df.at[0,'Lot ID'], df.at[0,'Bobbin ID'], df.at[0,'Length (m)']), 
-                   (df.at[1,'Lot ID'], df.at[1,'Bobbin ID'], df.at[1,'Length (m)']), 
-                   (df.at[2,'Lot ID'], df.at[2,'Bobbin ID'], df.at[2,'Length (m)'])]
+for i in range(0,5):
+    bobbins_lengths = [(df.at[0,'Lot ID'], df.at[0,'Bobbin ID'], df.at[0,'Length (m)']), 
+                    (df.at[1,'Lot ID'], df.at[1,'Bobbin ID'], df.at[1,'Length (m)']), 
+                    (df.at[2,'Lot ID'], df.at[2,'Bobbin ID'], df.at[2,'Length (m)'])]
 
 original_sum = sum(bobbin[2] for bobbin in bobbins_lengths)  # Calculate the sum of original lengths
 total_max_length = 0  # Initialize total maximum length
+
+
+st.write(bobbins_lengths)
+
 
 max_possible_length, sequence, knots, unused, trimmed = tie_fiber(bobbins_lengths)
 if max_possible_length == 0:
@@ -116,7 +120,7 @@ else:
     total_max_length += max_possible_length  # Update total maximum length
     unused_bobbins = [bobbin for bobbin in unused if bobbin[2] > 0]
 
-    for i in range(1, 4):
+    for i in range(1, 5):
         st.write(f"# Sequence {i+1}:")
         max_length, seq, knots, unused, trimmed = generate_sequence(unused_bobbins)
         if max_length == 0:
@@ -140,3 +144,39 @@ st.write(f"\nTotal Sum of Original Lengths: {original_sum}")
 st.write(f"Total Maximum Length from All Sequences: {total_max_length}")
 st.write(f"Sum of Lengths Left in Unused Bobbin List: {sum_of_unused_lengths}")
 st.write(f"Percent of Recovered Length: {percent_recovered:.2f}%")
+
+
+#######################################################################################################################
+# output dataframe for download
+#######################################################################################################################
+
+st.write("# New Dataframe")
+
+# Assuming 'unused_bobbins' is your list of unused bobbins in the correct tuple format
+remaining_unused_bobbins = [(bobbin[0], bobbin[1], bobbin[2]) for bobbin in unused_bobbins]
+
+# Create DataFrame from the list of tuples
+unused_bobbins_df = pd.DataFrame(remaining_unused_bobbins, columns=['Lot ID', 'Line ID', 'Length'])
+
+# Display the DataFrame
+st.write(unused_bobbins_df)
+
+# Save new dataframe as Excel file
+#file_name = 'Updated_Mixed_Lot_Remaining_Bobbins.xlsx'
+#unused_bobbins_df.to_excel(file_name)
+
+
+
+@st.cache_data
+def convert_df(df):
+    # IMPORTANT: Cache the conversion to prevent computation on every rerun
+    return df.to_csv().encode('utf-8')
+
+csv = convert_df(unused_bobbins_df)
+
+st.download_button(
+    label="Download remaining bobbins as an Excel file",
+    data=csv,
+    file_name='Updated_Mixed_Lot_Remaining_Bobbins.csv',
+    mime='text/csv',
+)
